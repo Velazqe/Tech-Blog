@@ -7,8 +7,8 @@ import dotenv from 'dotenv';
 import sequelize from './config/connection.js';
 import routes from './routes/index.js';
 import connectSessionSequelize from 'connect-session-sequelize';
-import Post from './models/Post.js'; // Ensure this import is correct
-import User from './models/User.js'; // Ensure this import is correct
+import Post from './models/Post.js'; 
+import User from './models/User.js'; 
 
 dotenv.config();
 

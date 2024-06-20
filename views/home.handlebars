@@ -1,0 +1,60 @@
+<div class="container">
+  <h1>The Tech Blog</h1>
+  <div id="posts-container">
+    {{#each posts}}
+    <div class="post">
+      <h2 class="post-title">{{title}}</h2>
+      <p class="post-content">{{content}}</p>
+      <p class="post-meta">Posted by {{user.username}} on {{createdAt}}</p>
+      <button class="comment-btn" data-id="{{id}}">Add Comment</button>
+      {{#if ../userLoggedIn}}
+      <div class="comment-form hidden" data-id="{{id}}">
+        <textarea class="comment-text" placeholder="Enter your comment" required></textarea>
+        <button class="submit-comment-btn">Submit Comment</button>
+      </div>
+      {{else}}
+      <p class="login-prompt hidden" data-id="{{id}}">Please <a href="/login">log in</a> to comment.</p>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.comment-btn').forEach(button => {
+  button.addEventListener('click', (event) => {
+    const postId = event.target.dataset.id;
+    const commentForm = document.querySelector(`.comment-form[data-id="${postId}"]`);
+    const loginPrompt = document.querySelector(`.login-prompt[data-id="${postId}"]`);
+
+    if (commentForm) {
+      commentForm.classList.toggle('hidden');
+    } else if (loginPrompt) {
+      loginPrompt.classList.toggle('hidden');
+    }
+  });
+});
+
+document.querySelectorAll('.submit-comment-btn').forEach(button => {
+  button.addEventListener('click', async (event) => {
+    const postId = event.target.closest('.comment-form').dataset.id;
+    const commentText = event.target.previousElementSibling.value;
+
+    const response = await fetch(`/posts/${postId}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content: commentText }),
+    });
+
+    if (response.ok) {
+      location.reload();
+    } else {
+      const errorData = await response.json();
+      console.error("Error adding comment:", errorData);
+      alert('Failed to add comment');
+    }
+  });
+});
+</script>

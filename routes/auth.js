@@ -7,4 +7,8 @@ router.post('/login', login);
 router.post('/signup', signup);
 router.post('/logout', logout);
 
+router.get('/signup', (req, res) => {
+    res.render('signup');
+  });
+
 export default router;

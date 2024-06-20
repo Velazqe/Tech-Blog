@@ -1,0 +1,83 @@
+<div class="container">
+  <h1>Your Dashboard</h1>
+  <button id="new-post-btn">+ New Post</button>
+  <div id="new-post-form" class="hidden">
+    <h2>New Post</h2>
+    <form id="create-post-form">
+      <div>
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" required>
+      </div>
+      <div>
+        <label for="content">Content</label>
+        <textarea id="content" name="content" required></textarea>
+      </div>
+      <button type="submit">Create Post</button>
+    </form>
+  </div>
+  <div id="posts-container">
+    {{#each posts}}
+    <div class="post">
+      <h2 class="post-title">{{title}}</h2>
+      <p class="post-content">{{content}}</p>
+      <p class="post-meta">Posted by {{user.username}} on {{createdAt}}</p>
+      <a href="/posts/{{id}}/edit"><button class="edit">Edit</button></a>
+      <button class="delete delete-post-btn" data-id="{{id}}">Delete</button>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+<script>
+document.getElementById('new-post-btn').addEventListener('click', () => {
+  const newPostForm = document.getElementById('new-post-form');
+  if (newPostForm.classList.contains('hidden')) {
+    newPostForm.classList.remove('hidden');
+  } else {
+    newPostForm.classList.add('hidden');
+  }
+});
+
+document.getElementById('create-post-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const title = document.getElementById('title').value;
+  const content = document.getElementById('content').value;
+
+  const response = await fetch('/posts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, content }),
+  });
+
+  if (response.ok) {
+    location.reload();
+  } else {
+    const errorData = await response.json();
+    console.error("Error creating post:", errorData);
+    alert('Failed to create post');
+  }
+});
+
+document.querySelectorAll('.delete-post-btn').forEach(button => {
+  button.addEventListener('click', async (event) => {
+    const postId = event.target.dataset.id;
+
+    if (confirm('Are you sure you want to delete this post?')) {
+      const response = await fetch(`/posts/${postId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        const errorData = await response.json();
+        console.error("Error deleting post:", errorData);
+        alert('Failed to delete post');
+      }
+    }
+  });
+});
+</script>

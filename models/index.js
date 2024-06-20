@@ -1,8 +1,7 @@
-import Sequelize from 'sequelize';
-import sequelize from '../config/connection.js';
 import User from './User.js';
 import Post from './Post.js';
 import Comment from './Comment.js';
+import sequelize from '../config/connection.js';
 
 User.hasMany(Post, {
   foreignKey: 'user_id',
